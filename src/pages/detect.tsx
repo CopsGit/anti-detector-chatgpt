@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Detector from "@/component/Detector";
+import Head from "next/head";
 
 const Detect = () => {
     const [input, setInput] = useState("");
@@ -8,6 +9,9 @@ const Detect = () => {
             flex flex-col items-center justify-center
             h-screen w-screen bg-gray-100 p-3 overflow-y-auto
         `}>
+            <Head>
+                <title>ChatGPT Detector</title>
+            </Head>
             <textarea
                 placeholder="Enter text to detect"
                 rows={10}
