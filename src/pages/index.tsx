@@ -5,6 +5,8 @@ import {useEffect, useRef, useState} from 'react';
 import sendIcon from '../assets/send.svg';
 import ChatBlock from '@/component/ChatBlock';
 import Link from "next/link";
+import ReactDOM from 'react-dom';
+import Detector, {prop} from "@/component/Detector";
 
 const inter = Inter({subsets: ['latin']});
 
@@ -107,18 +109,12 @@ export default function Home() {
     };
 
     const handleTypeResponse = (element: HTMLElement, text: string) => {
-        // let index = 0;
-        //
-        // let interval = setInterval(() => {
-        //     if (index < text.length) {
-        //         element.innerHTML += text.charAt(index);
-        //         index++;
-        //     } else {
-        //         clearInterval(interval);
-        //     }
-        // }, 0);
-
         element.innerHTML = text;
+        const detect = prop(text)
+        // Create a new Detector element and append it to the messageDiv
+        const detectorElement = document.createElement('div');
+        ReactDOM.render(<Detector content={text} page="home" />, detectorElement);
+        element.appendChild(detectorElement);
     };
 
     const handleUid = () => {
@@ -196,12 +192,11 @@ export default function Home() {
             clearInterval(loadInterval);
             messageDiv.innerHTML = ' ';
 
-            // to clear the textarea input
             setInputValue('');
 
             if (response.status === 200) {
                 const data = await response.json();
-                const parsedData = data?.bot.trim(); // trims any trailing spaces/'\n'
+                const parsedData = data?.bot.trim();
 
                 handleTypeResponse(messageDiv, parsedData);
             } else {

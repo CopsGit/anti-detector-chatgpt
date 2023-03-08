@@ -2,6 +2,7 @@ import React from 'react';
 import bot from "../assets/bot.svg";
 import user from "../assets/user.svg";
 import Image from "next/image";
+import Detector from "@/component/Detector";
 
 interface ChatBlockProps {
     isAi: boolean;
@@ -10,6 +11,8 @@ interface ChatBlockProps {
 }
 
 const ChatBlock: React.FC<ChatBlockProps> = ({isAi, value, uniqueId}) => {
+
+    console.log("ChatBlock: ", isAi, value, uniqueId);
 
     return (
         <div className={`

@@ -23,7 +23,7 @@ const Detect = () => {
                     text-base px-4 py-2 resize-none leading-6 transition-colors duration-200 ease-in-out
                 `}
             />
-            <Detector content={input}/>
+            <Detector content={input} page={"detect"}/>
         </div>
     );
 };
