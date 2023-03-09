@@ -221,7 +221,7 @@ export default function Home() {
                 behavior: 'smooth',
             });
         }
-    }, [chatData, generatedChat]);
+    }, [chatData, generatedChat, detect]);
 
     return (
         <>
