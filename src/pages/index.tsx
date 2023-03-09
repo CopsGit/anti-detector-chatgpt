@@ -325,12 +325,7 @@ export default function Home() {
                     {chatData[0]?.value.length > 0 && <ChatBlock isAi={false} value={chatData[0]?.value} uniqueId={chatData[0]?.uniqueId}/>}
                     {
                         generatedChat.length > 0 &&
-                        <div
-                            className={`
-                        flex flex-col items-center justify-start
-                        w-full h-full py-4 gap-4
-                    `}
-                        >
+                        <div>
                             <ChatBlock isAi={true} value={generatedChat as string} uniqueId={chatData[1]?.uniqueId}/>
                             {detect && <Detector content={generatedChat as string} page={"home"}/>}
                         </div>

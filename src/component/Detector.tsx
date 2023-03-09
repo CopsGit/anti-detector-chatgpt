@@ -96,7 +96,7 @@ const Detector: React.FC<DetectorProps> = ({content, page}) => {
     return (
         <div className={`
             flex flex-col items-center justify-center mt-3
-            h-36 w-full py-3 px-6 overflow-y-auto bg-gray-100 rounded-lg shadow-lg
+            h-1/2 max-h-36 w-full py-3 px-6 bg-gray-100 rounded-lg shadow-lg
         `}>
             <button onClick={handleClick} className={`${page === "home"? "hidden" : "block"}
                 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
