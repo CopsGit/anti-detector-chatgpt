@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
             messages: [
                 {
                     role: "user",
-                    content: `${prompt} with ${wordLimit} words`,
+                    content: `${prompt} with only ${wordLimit} words`,
                 },
             ],
             max_tokens: wordLimit,

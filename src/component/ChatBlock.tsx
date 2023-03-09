@@ -12,8 +12,6 @@ interface ChatBlockProps {
 
 const ChatBlock: React.FC<ChatBlockProps> = ({isAi, value, uniqueId}) => {
 
-    console.log("ChatBlock: ", isAi, value, uniqueId);
-
     return (
         <div className={`
             ${isAi ? "bg-white" : "bg-gray-300"} w-full rounded-lg p-3
@@ -32,7 +30,7 @@ const ChatBlock: React.FC<ChatBlockProps> = ({isAi, value, uniqueId}) => {
                         height={30}
                     />
                 </div>
-                <div className="p-3 w-full test-gray-700 whitespace-pre-wrap" id={uniqueId}>
+                <div className="flex flex-col p-3 w-full test-gray-700 whitespace-pre-wrap" id={uniqueId}>
                     {value}
                 </div>
             </div>

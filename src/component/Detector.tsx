@@ -96,7 +96,7 @@ const Detector: React.FC<DetectorProps> = ({content, page}) => {
     return (
         <div className={`
             flex flex-col items-center justify-center mt-3
-            h-1/2 w-full py-3 px-6 overflow-y-auto bg-gray-100 rounded-lg shadow-lg
+            h-36 w-full py-3 px-6 overflow-y-auto bg-gray-100 rounded-lg shadow-lg
         `}>
             <button onClick={handleClick} className={`${page === "home"? "hidden" : "block"}
                 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
@@ -104,18 +104,18 @@ const Detector: React.FC<DetectorProps> = ({content, page}) => {
             `}>Detect</button>
             <p className={`
                 text-xl font-bold mt-3 
-                ${result.Class === 'very unlikely' ? "text-green-500" : result.Class === 'unlikely' ? "text-green-500" : result.Class === 'unclear if it is' ? "text-yellow-500" : result.Class === 'possibly' ? "text-yellow-500" : result.Class === 'likely' ? "text-red-500" : "text-gray-700"}
+                ${result?.Class === 'very unlikely' ? "text-green-500" : result?.Class === 'unlikely' ? "text-green-500" : result?.Class === 'unclear if it is' ? "text-yellow-500" : result?.Class === 'possibly' ? "text-yellow-500" : result?.Class === 'likely' ? "text-red-500" : "text-gray-700"}
             `}>Result: {
-                result.Class ? `${result.Class} AI-generated` : 'No result yet'
+                result?.Class ? `${result?.Class} AI-generated` : 'No result yet'
             }</p>
             <div className="flex justify-between w-full mt-5 items-center">
-                <span className={`text-lg font-medium ${result.Class === 'very unlikely' ? "text-green-500" : result.Class === 'unlikely' ? "text-green-500" : result.Class === 'unclear if it is' ? "text-yellow-500" : result.Class === 'possibly' ? "text-yellow-500" : result.Class === 'likely' ? "text-red-500" : "text-gray-700"}`}>AI-Generated Probability</span>
-                <span className={`text-lg font-medium ${result.Class === 'very unlikely' ? "text-green-500" : result.Class === 'unlikely' ? "text-green-500" : result.Class === 'unclear if it is' ? "text-yellow-500" : result.Class === 'possibly' ? "text-yellow-500" : result.Class === 'likely' ? "text-red-500" : "text-gray-700"}`}>{result['AI-Generated Probability']?.toFixed(2) || 0}%</span>
+                <span className={`text-lg font-medium ${result?.Class === 'very unlikely' ? "text-green-500" : result?.Class === 'unlikely' ? "text-green-500" : result?.Class === 'unclear if it is' ? "text-yellow-500" : result?.Class === 'possibly' ? "text-yellow-500" : result?.Class === 'likely' ? "text-red-500" : "text-gray-700"}`}>AI-Generated Probability</span>
+                <span className={`text-lg font-medium ${result?.Class === 'very unlikely' ? "text-green-500" : result?.Class === 'unlikely' ? "text-green-500" : result?.Class === 'unclear if it is' ? "text-yellow-500" : result?.Class === 'possibly' ? "text-yellow-500" : result?.Class === 'likely' ? "text-red-500" : "text-gray-700"}`}>{result ? result['AI-Generated Probability']?.toFixed(2) : 0}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-5 dark:bg-gray-700">
                 <div
-                    className={`h-5 rounded-full ${result.Class === 'very unlikely' ? "bg-green-500" : result.Class === 'unlikely' ? "bg-green-500" : result.Class === 'unclear if it is' ? "bg-yellow-500" : result.Class === 'possibly' ? "bg-yellow-500" : result.Class === 'likely' ? "bg-red-500" : "bg-gray-700"}`}
-                    style={{width: `${result['AI-Generated Probability']?.toFixed(2)}%`}}></div>
+                    className={`h-5 rounded-full ${result?.Class === 'very unlikely' ? "bg-green-500" : result?.Class === 'unlikely' ? "bg-green-500" : result?.Class === 'unclear if it is' ? "bg-yellow-500" : result?.Class === 'possibly' ? "bg-yellow-500" : result?.Class === 'likely' ? "bg-red-500" : "bg-gray-700"}`}
+                    style={{width: `${result && result['AI-Generated Probability']?.toFixed(2)}%`}}></div>
             </div>
         </div>
     );

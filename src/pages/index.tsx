@@ -1,11 +1,13 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import {Inter} from 'next/font/google';
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import sendIcon from '../assets/send.svg';
 import ChatBlock from '@/component/ChatBlock';
 import Link from "next/link";
 import {marked} from "marked";
+import Detector, {prop} from "@/component/Detector";
+import ReactDOM from 'react-dom';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -29,6 +31,7 @@ export default function Home() {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [generatedChat, setGeneratedChat] = useState<String>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [detect, setDetect] = useState(false);
     const chatRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -94,14 +97,15 @@ export default function Home() {
 
     let loadInterval: NodeJS.Timeout;
 
-    const handleTypeResponse = (element: HTMLElement, text: string) => {
-
-        // const detect = prop(text)
-        // // Create a new Detector element and append it to the messageDiv
-        // const detectorElement = document.createElement('div');
-        // ReactDOM.render(<Detector content={text} page="home" />, detectorElement);
-        // element.appendChild(detectorElement);
-    };
+    // const handleTypeResponse = (element: HTMLElement, text: string) => {
+    //     element.innerHTML = text;
+    //
+    //     // const detect = prop(text)
+    //     // // Create a new Detector element and append it to the messageDiv
+    //     // const detectorElement = document.createElement('div');
+    //     // ReactDOM.render(<Detector content={text} page="home" />, detectorElement);
+    //     // element.appendChild(detectorElement);
+    // };
 
     const handleUid = () => {
         const timestamp = Date.now();
@@ -113,6 +117,8 @@ export default function Home() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setGeneratedChat('')
+        setDetect(false)
 
         if (apiKey === "") {
             setAlerts([{
@@ -151,15 +157,11 @@ export default function Home() {
             uniqueId,
         };
 
-        setChatData([...chatData, newChatMan, newChatBot]);
+        setChatData([newChatMan, newChatBot]);
     };
 
     useEffect(() => {
         const fetchChat = async () => {
-            // specific message div
-            const messageDiv = document.getElementById(uniqueId);
-
-            if (!messageDiv) return;
 
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -174,7 +176,6 @@ export default function Home() {
             });
 
             clearInterval(loadInterval);
-            messageDiv.innerHTML = ' ';
 
             setInputValue('');
 
@@ -196,9 +197,15 @@ export default function Home() {
                     setGeneratedChat((prev) => prev + chunkValue);
                 }
 
+                setDetect(true)
+
             } else {
                 const err = await response.json();
-                messageDiv.innerHTML = 'Something went wrong';
+                setAlerts([{
+                    id: Date.now(),
+                    type: 'error',
+                    message: err.message,
+                }])
             }
         };
 
@@ -214,7 +221,7 @@ export default function Home() {
                 behavior: 'smooth',
             });
         }
-    }, [handleTypeResponse, chatData, generatedChat]);
+    }, [chatData, generatedChat]);
 
     return (
         <>
@@ -315,10 +322,18 @@ export default function Home() {
                             </p>
                         </div>
                     }
+                    {chatData[0]?.value.length > 0 && <ChatBlock isAi={false} value={chatData[0]?.value} uniqueId={chatData[0]?.uniqueId}/>}
                     {
-                        chatData.length > 0 && chatData?.map((item, index) =>
-                            <ChatBlock key={index} isAi={item.isAi} value={item.isAi ? generatedChat : item.value} uniqueId={item.uniqueId}/>
-                        )
+                        generatedChat.length > 0 &&
+                        <div
+                            className={`
+                        flex flex-col items-center justify-start
+                        w-full h-full py-4 gap-4
+                    `}
+                        >
+                            <ChatBlock isAi={true} value={generatedChat as string} uniqueId={chatData[1]?.uniqueId}/>
+                            {detect && <Detector content={generatedChat as string} page={"home"}/>}
+                        </div>
                     }
                 </div>
                 <form
@@ -361,7 +376,7 @@ export default function Home() {
                         <option value="250">250 Words</option>
                         <option value="500">500 Words</option>
                         <option value="750">750 Words</option>
-                        <option disabled={true} value="1000">1000 Words</option>
+                        <option value="1000">1000 Words</option>
                     </select>
                     <button
                         className={`
