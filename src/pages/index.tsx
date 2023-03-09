@@ -5,8 +5,7 @@ import {useEffect, useRef, useState} from 'react';
 import sendIcon from '../assets/send.svg';
 import ChatBlock from '@/component/ChatBlock';
 import Link from "next/link";
-import ReactDOM from 'react-dom';
-import Detector, {prop} from "@/component/Detector";
+import {marked} from "marked";
 
 const inter = Inter({subsets: ['latin']});
 
@@ -19,7 +18,7 @@ interface Alert {
 export default function Home() {
     const [chatData, setChatData] = useState<{
         isAi: boolean;
-        value: string;
+        value: any;
         uniqueId: string;
     }[]>([]);
     const [apiKey, setApiKey] = useState<string>("");
@@ -28,6 +27,7 @@ export default function Home() {
     const [wordLimit, setWordLimit] = useState<number>(100);
     const [uniqueId, setUniqueId] = useState<string>('');
     const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [generatedChat, setGeneratedChat] = useState<String>("");
     const [loading, setLoading] = useState<boolean>(false);
     const chatRef = useRef<HTMLDivElement>(null);
 
@@ -94,27 +94,13 @@ export default function Home() {
 
     let loadInterval: NodeJS.Timeout;
 
-    const handleLoader = (element: HTMLElement) => {
-        element.textContent = '';
-
-        loadInterval = setInterval(() => {
-            // Update the text content of the loading indicator
-            element.textContent += '.';
-
-            // If the loading indicator has reached three dots, reset it
-            if (element.textContent === '....') {
-                element.textContent = '';
-            }
-        }, 300);
-    };
-
     const handleTypeResponse = (element: HTMLElement, text: string) => {
-        element.innerHTML = text;
-        const detect = prop(text)
-        // Create a new Detector element and append it to the messageDiv
-        const detectorElement = document.createElement('div');
-        ReactDOM.render(<Detector content={text} page="home" />, detectorElement);
-        element.appendChild(detectorElement);
+
+        // const detect = prop(text)
+        // // Create a new Detector element and append it to the messageDiv
+        // const detectorElement = document.createElement('div');
+        // ReactDOM.render(<Detector content={text} page="home" />, detectorElement);
+        // element.appendChild(detectorElement);
     };
 
     const handleUid = () => {
@@ -175,8 +161,6 @@ export default function Home() {
 
             if (!messageDiv) return;
 
-            handleLoader(messageDiv);
-
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
@@ -195,10 +179,23 @@ export default function Home() {
             setInputValue('');
 
             if (response.status === 200) {
-                const data = await response.json();
-                const parsedData = data?.bot.trim();
+                // This data is a ReadableStream
+                const data = response.body;
+                if (!data) {
+                    return;
+                }
 
-                handleTypeResponse(messageDiv, parsedData);
+                const reader = data.getReader();
+                const decoder = new TextDecoder();
+                let done = false;
+
+                while (!done) {
+                    const { value, done: doneReading } = await reader.read();
+                    done = doneReading;
+                    const chunkValue = decoder.decode(value).replace("<|im_end|>", "");
+                    setGeneratedChat((prev) => prev + chunkValue);
+                }
+
             } else {
                 const err = await response.json();
                 messageDiv.innerHTML = 'Something went wrong';
@@ -217,7 +214,7 @@ export default function Home() {
                 behavior: 'smooth',
             });
         }
-    }, [handleTypeResponse, chatData]);
+    }, [handleTypeResponse, chatData, generatedChat]);
 
     return (
         <>
@@ -320,7 +317,7 @@ export default function Home() {
                     }
                     {
                         chatData.length > 0 && chatData?.map((item, index) =>
-                            <ChatBlock key={index} isAi={item.isAi} value={item.value} uniqueId={item.uniqueId}/>
+                            <ChatBlock key={index} isAi={item.isAi} value={item.isAi ? generatedChat : item.value} uniqueId={item.uniqueId}/>
                         )
                     }
                 </div>

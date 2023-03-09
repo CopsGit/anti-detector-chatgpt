@@ -1,18 +1,17 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Configuration, OpenAIApi } from "openai";
+import {OpenAIStream, OpenAIStreamPayload} from "@/utils/OpenAIStream";
 
-const ask = async (req: NextApiRequest, res: NextApiResponse) => {
-    try {
-        const { prompt, wordLimit, apiKey } = req.body as {
+export const config = {
+    runtime: "edge",
+};
+
+const handler = async (req: Request): Promise<Response> => {
+        const { prompt, wordLimit, apiKey } = (await req.json()) as {
             prompt: string;
             wordLimit: number;
             apiKey: string;
         };
 
-        const configuration = new Configuration({
-            apiKey: apiKey,
-        });
-        const openai = new OpenAIApi(configuration);
+    console.log(prompt, wordLimit, apiKey)
 
         let temp: number = 1.5;
         let fp: number = 1.0;
@@ -36,7 +35,7 @@ const ask = async (req: NextApiRequest, res: NextApiResponse) => {
 
         console.log(`temp: ${temp}, fp: ${fp}`);
 
-        const { data } = await openai.createChatCompletion({
+        const payload: OpenAIStreamPayload = {
             model: "gpt-3.5-turbo",
             messages: [
                 {
@@ -49,15 +48,13 @@ const ask = async (req: NextApiRequest, res: NextApiResponse) => {
             top_p: 0.95,
             frequency_penalty: fp,
             presence_penalty: 0.0,
-        });
+            stream: true,
+            n: 1,
+            api_key: apiKey,
+        }
 
-        res.status(200).send({
-            bot: data.choices[0]?.message?.content?.trim() as string,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(error as string || 'Something went wrong');
-    }
+    const stream = await OpenAIStream(payload, apiKey);
+    return new Response(stream);
 };
 
-export default ask;
+export default handler;
