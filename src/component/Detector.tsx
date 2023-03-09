@@ -80,11 +80,27 @@ export const prop = async (content:string) => {
 
 const Detector: React.FC<DetectorProps> = ({content, page}) => {
 
-    const [result, setResult] = useState<any>({});
+    const [result, setResult] = useState<
+        {
+            Class: 'very unlikely' |
+            'unlikely' |
+            'unclear if it is' |
+            'possibly' |
+            'likely'
+            'AI-Generated Probability': number
+        } | undefined
+        >(undefined);
 
     const handleClick = async () => {
         const r = await prop(content);
-        setResult(r);
+        setResult(r as {
+            Class: 'very unlikely' |
+            'unlikely' |
+            'unclear if it is' |
+            'possibly' |
+            'likely'
+            'AI-Generated Probability': number
+        })
     }
 
     useEffect(() => {
